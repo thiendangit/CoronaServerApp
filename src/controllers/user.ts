@@ -35,41 +35,18 @@ export const postLogin = async (req: Request, res: Response, next: NextFunction)
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-        console.log({errors});
-        res.json({
-            success: false,
-            data: {},
-            message: "Something went wrong!"
-        });
         req.flash("errors", errors.array());
         return res.redirect("/login");
     }
 
     passport.authenticate("local", (err: Error, user: UserDocument, info: IVerifyOptions) => {
-        console.log(
-            req.user
-        );
         if (err) { return next(err); }
         if (!user) {
-            res.json({
-                success: false,
-                data: {},
-                message: "Something went wrong!"
-            });
             req.flash("errors", {msg: info.message});
             return res.redirect("/login");
         }
         req.logIn(user, (err) => {
             if (err) { return next(err); }
-            res.json({
-                success: true,
-                data: {
-                    name: "Thiện Đăng",
-                    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRBXNywrIN2svfAQNTUgejhwlnrlgMbz5qX391ighXPMg&usqp=CAU&ec=45688575",
-                    ...req.user
-                },
-                message: "Login Success"
-            });
             req.flash("success", { msg: "Success! You are logged in." });
             res.redirect(req.session.returnTo || "/");
         });
