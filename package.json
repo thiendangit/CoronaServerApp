@@ -40,6 +40,7 @@
         "express-session": "^1.16.2",
         "express-validator": "^6.2.0",
         "fbgraph": "^1.4.4",
+        "jsonwebtoken": "^8.5.1",
         "lodash": "^4.17.19",
         "lusca": "^1.6.1",
         "mongoose": "^5.7.5",

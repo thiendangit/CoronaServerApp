@@ -103,8 +103,25 @@ app.post("/account/delete", passportConfig.isAuthenticated, userController.postD
 app.get("/account/unlink/:provider", passportConfig.isAuthenticated, userController.getOauthUnlink);
 
 /**
- * API examples routes.
+ * API routes.
  */
+
+app.post("/api/login", userController.postLoginApi);
+app.get("/api/logout", userController.logout);
+app.get("/api/forgot", userController.getForgot);
+app.post("/api/forgot", userController.postForgot);
+app.get("/api/reset/:token", userController.getReset);
+app.post("/api/reset/:token", userController.postReset);
+app.get("/api/signup", userController.getSignup);
+app.post("/api/signup", userController.postSignup);
+app.get("/api/contact", contactController.getContact);
+app.post("/api/contact", contactController.postContact);
+app.get("/api/account", passportConfig.isAuthenticated, userController.getAccount);
+app.post("/api/account/profile", passportConfig.isAuthenticated, userController.postUpdateProfile);
+app.post("/api/account/password", passportConfig.isAuthenticated, userController.postUpdatePassword);
+app.post("/api/account/delete", passportConfig.isAuthenticated, userController.postDeleteAccount);
+app.get("/api/account/unlink/:provider", passportConfig.isAuthenticated, userController.getOauthUnlink);
+
 app.get("/api", apiController.getApi);
 app.get("/api/facebook", passportConfig.isAuthenticated, passportConfig.isAuthorized, apiController.getFacebook);
 

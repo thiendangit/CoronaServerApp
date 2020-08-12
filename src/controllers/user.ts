@@ -29,12 +29,13 @@ export const getLogin = (req: Request, res: Response) => {
 export const postLogin = async (req: Request, res: Response, next: NextFunction) => {
     await check("email", "Email is not valid").isEmail().run(req);
     await check("password", "Password cannot be blank").isLength({min: 1}).run(req);
-    // eslint-disable-next-line @typescript-eslint/camelcase
+// eslint-disable-next-line @typescript-eslint/camelcase
     await sanitize("email").normalizeEmail({ gmail_remove_dots: false }).run(req);
 
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
+        console.log({errors});
         req.flash("errors", errors.array());
         return res.redirect("/login");
     }
@@ -49,6 +50,50 @@ export const postLogin = async (req: Request, res: Response, next: NextFunction)
             if (err) { return next(err); }
             req.flash("success", { msg: "Success! You are logged in." });
             res.redirect(req.session.returnTo || "/");
+        });
+    })(req, res, next);
+};
+
+export const postLoginApi = async (isApi = false, req?: Request, res?: Response, next?: NextFunction) => {
+    await check("email", "Email is not valid").isEmail().run(req);
+    await check("password", "Password cannot be blank").isLength({min: 1}).run(req);
+// eslint-disable-next-line @typescript-eslint/camelcase
+    await sanitize("email").normalizeEmail({ gmail_remove_dots: false }).run(req);
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        console.log({errors});
+        res.json({
+            success: false,
+            data: {},
+            message: "Something went wrong!",
+            error : errors
+        });
+    }
+
+    passport.authenticate("local", (err: Error, user: UserDocument, info: IVerifyOptions) => {
+        if (err) { return next(err); }
+        if (!user) {
+            res.json({
+                success: false,
+                data: {},
+                message: "Something went wrong!"
+            });
+        }
+        req.logIn(user, (err) => {
+            if (err) { return next(err); }
+            if (user) {
+                res.send({
+                    success: true,
+                    data: {
+                        name: "Thiện Đăng",
+                        image: "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRBXNywrIN2svfAQNTUgejhwlnrlgMbz5qX391ighXPMg&usqp=CAU&ec=45688575",
+                        ...req.user
+                    },
+                    message: "Login Success"
+                });
+            }
         });
     })(req, res, next);
 };
